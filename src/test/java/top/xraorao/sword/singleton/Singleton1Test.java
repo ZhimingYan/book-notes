@@ -1,9 +1,18 @@
+/*
+ * Copyright (c) 2018.  Xiong Raorao. All rights reserved.
+ * Project Name: book-notes
+ * File Name: Singleton1Test.java
+ * Date: 18-3-18 下午11:14
+ * Author: Xiong Raorao
+ */
+
 package top.xraorao.sword.singleton;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import top.xraorao.sword.singleton.Singleton1;
 
 /**
  * Singleton1 Tester.
