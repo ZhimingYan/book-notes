@@ -1,27 +1,27 @@
 /*
  * Copyright (c) 2018.  Xiong Raorao. All rights reserved.
  * Project Name: book-notes
- * File Name: Singleton3Test.java
+ * File Name: Singleton5Test.java
  * Date: 18-3-18 下午11:14
  * Author: Xiong Raorao
  */
 
-package top.xraorao.sword.singleton;
+package top.xraorao.sword.t2;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import top.xraorao.sword.singleton.Singleton3;
+import top.xraorao.sword.t2.Singleton5.SingletonHander;
 
 /**
- * Singleton3 Tester.
+ * Singleton5 Tester.
  *
  * @author <Authors name>
  * @version 1.0
  * @since <pre>03/17/2018</pre>
  */
-public class Singleton3Test {
+public class Singleton5Test {
 
   @Before
   public void before() throws Exception {
@@ -36,10 +36,10 @@ public class Singleton3Test {
    */
   @Test
   public void testGetInstance() throws Exception {
-    Singleton3 singleton3 = Singleton3.getInstance();
-    Singleton3 singleton31 = Singleton3.getInstance();
-    Assert.assertNotEquals(singleton3, null);
-    Assert.assertEquals(singleton3, singleton31);
+    Singleton5 singleton5 = SingletonHander.INSTANCE.getInstance();
+    Singleton5 singleton51 = SingletonHander.INSTANCE.getInstance();
+    Assert.assertNotEquals(singleton5, null);
+    Assert.assertEquals(singleton5, singleton51);
   }
 
 

@@ -1,27 +1,26 @@
 /*
  * Copyright (c) 2018.  Xiong Raorao. All rights reserved.
  * Project Name: book-notes
- * File Name: Singleton6Test.java
+ * File Name: Singleton2Test.java
  * Date: 18-3-18 下午11:14
  * Author: Xiong Raorao
  */
 
-package top.xraorao.sword.singleton;
+package top.xraorao.sword.t2;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import top.xraorao.sword.singleton.Singleton6;
 
 /**
- * Singleton6 Tester.
+ * Singleton2 Tester.
  *
  * @author <Authors name>
  * @version 1.0
  * @since <pre>03/17/2018</pre>
  */
-public class Singleton6Test {
+public class Singleton2Test {
 
   @Before
   public void before() throws Exception {
@@ -32,14 +31,14 @@ public class Singleton6Test {
   }
 
   /**
-   * Method: getInstatnce()
+   * Method: getInstance()
    */
   @Test
-  public void testGetInstatnce() throws Exception {
-    Singleton6 singleton6 = Singleton6.getInstatnce();
-    Singleton6 singleton61 = Singleton6.getInstatnce();
-    Assert.assertNotEquals(singleton6, null);
-    Assert.assertEquals(singleton6, singleton61);
+  public void testGetInstance() throws Exception {
+    Singleton2 singleton2 = Singleton2.getInstance();
+    Singleton2 singleton21 = Singleton2.getInstance();
+    Assert.assertNotEquals(singleton2, null);
+    Assert.assertEquals(singleton2, singleton21);
   }
 
 

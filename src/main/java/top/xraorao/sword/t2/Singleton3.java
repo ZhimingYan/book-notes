@@ -6,7 +6,7 @@
  * Author: Xiong Raorao
  */
 
-package top.xraorao.sword.singleton;
+package top.xraorao.sword.t2;
 
 /**
  * 3. 饿汉式.

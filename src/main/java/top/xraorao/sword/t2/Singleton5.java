@@ -6,7 +6,7 @@
  * Author: Xiong Raorao
  */
 
-package top.xraorao.sword.singleton;
+package top.xraorao.sword.t2;
 
 /**
  * 5. 枚举方法

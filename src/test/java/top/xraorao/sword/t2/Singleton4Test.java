@@ -6,13 +6,12 @@
  * Author: Xiong Raorao
  */
 
-package top.xraorao.sword.singleton;
+package top.xraorao.sword.t2;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import top.xraorao.sword.singleton.Singleton4;
 
 /**
  * Singleton4 Tester.
