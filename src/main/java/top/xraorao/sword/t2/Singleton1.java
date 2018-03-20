@@ -6,7 +6,7 @@
  * Author: Xiong Raorao
  */
 
-package top.xraorao.sword.singleton;
+package top.xraorao.sword.t2;
 
 /**
  * 1. 懒汉式（线程不安全）.
