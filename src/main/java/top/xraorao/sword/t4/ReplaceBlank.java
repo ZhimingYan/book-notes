@@ -17,6 +17,9 @@ package top.xraorao.sword.t4;
 public class ReplaceBlank {
 
   public static String replace(StringBuffer sb) {
+    if (sb == null) {
+      return null;
+    }
     int oldLength = sb.length();
     for (int i = 0; i < oldLength; i++) {
       if (sb.charAt(i) == ' ') {
@@ -36,11 +39,5 @@ public class ReplaceBlank {
       }
     }
     return sb.toString();
-  }
-
-
-  public static void main(String[] args) {
-    StringBuffer test = new StringBuffer(" ");
-    System.out.println(replace(test));
   }
 }
