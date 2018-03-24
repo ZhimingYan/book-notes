@@ -26,10 +26,10 @@ public class LinkedList<T> {
     return head;
   }
 
-  public List<T> getAll(){
+  public List<T> getAll() {
     List<T> list = new ArrayList<>();
     ListNode<T> start = head;
-    while(start != null){
+    while (start != null) {
       list.add(start.data);
       start = start.next;
     }

@@ -15,26 +15,27 @@ package top.xraorao.sword.t5;
  * @since 2018-03-23-23:22
  */
 public class Stack<T> {
+
   private ListNode<T> top = null;
   private int N = 0;
 
-  public boolean isEmpty(){
+  public boolean isEmpty() {
     return N == 0;
   }
 
-  public int size(){
+  public int size() {
     return N;
   }
 
   // 使用链表的头插法实现入栈
-  public void push(T data){
+  public void push(T data) {
     ListNode<T> newTop = new ListNode<>(data);
     newTop.next = top;
     top = newTop;
     N++;
   }
 
-  public T pop(){
+  public T pop() {
     T data = top.data;
     top = top.next;
     N--;
