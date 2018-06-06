@@ -205,7 +205,7 @@ Java 注解是附加在代码中的一些元信息，用于一些工具在编译
 
 ## 设计原则
 
-S.O.L.I.D
+S.O.L.I.D 原则  
 简写 |	全拼	| 中文翻译 | 简述
 --- | --- | --- | ---
 SRP|	The Single Responsibility Principle |	单一责任原则 | 一个类制作一件事，解耦合
