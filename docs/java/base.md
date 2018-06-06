@@ -208,11 +208,11 @@ Java 注解是附加在代码中的一些元信息，用于一些工具在编译
 S.O.L.I.D 原则  
 简写 |	全拼	| 中文翻译 | 简述
 --- | --- | --- | ---
-SRP|	The Single Responsibility Principle |	单一责任原则 | 一个类制作一件事，解耦合
-OCP|	The Open Closed Principle	 | 开放封闭原则 | 添加新功能的时候，不需要修改代码，典型的就是装饰者模式
-LSP|	The Liskov Substitution Principle	|里氏替换原则 | 子类能够当成父类用，需要比父类更加特殊
-ISP|	The Interface Segregation Principle	|接口分离原则 | 不强迫客户实现不需要用的接口，即接口功能上的分离
-DIP|	The Dependency Inversion Principle | 依赖倒置原则 | 高层模块不应该依赖于低层模块，二者都应该依赖于抽象；抽象不应该依赖于细节，细节应该依赖于抽象。
+SRP|	The Single Responsibility Principle |	单一责任原则 | 一个类制作一件事，解耦合 |
+OCP|	The Open Closed Principle	 | 开放封闭原则 | 添加新功能的时候，不需要修改代码，典型的就是装饰者模式 |
+LSP|	The Liskov Substitution Principle	|里氏替换原则 | 子类能够当成父类用，需要比父类更加特殊 |
+ISP|	The Interface Segregation Principle	|接口分离原则 | 不强迫客户实现不需要用的接口，即接口功能上的分离 |
+DIP|	The Dependency Inversion Principle | 依赖倒置原则 | 高层模块不应该依赖于低层模块，二者都应该依赖于抽象；抽象不应该依赖于细节，细节应该依赖于抽象。|
 
 ## 类图
 
