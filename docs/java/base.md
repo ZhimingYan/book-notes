@@ -218,3 +218,9 @@ DIP|	The Dependency Inversion Principle | 依赖倒置原则 | 高层模块不�
 
 [看懂UML类图](http://design-patterns.readthedocs.io/zh_CN/latest/read_uml.html#generalization)
 
+### 设计模式
+
+[创建型模式](http://xraorao.top/2017/04/07/java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%88%9B%E5%BB%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/)  
+[结构型模式](http://xraorao.top/2017/04/07/java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BB%93%E6%9E%84%E5%9E%8B%E6%A8%A1%E5%BC%8F/)  
+[行为型模式](http://xraorao.top/2017/04/07/java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E8%A1%8C%E4%B8%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/)  
+
