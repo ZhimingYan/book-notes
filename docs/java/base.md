@@ -224,9 +224,9 @@ DIP|	The Dependency Inversion Principle | 依赖倒置原则 | 高层模块不�
 [结构型模式](http://xraorao.top/2017/04/07/java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%BB%93%E6%9E%84%E5%9E%8B%E6%A8%A1%E5%BC%8F/)  
 [行为型模式](http://xraorao.top/2017/04/07/java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E8%A1%8C%E4%B8%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/)  
 
-# java 知音（面试集锦）
+# java 知音（面试集锦）
 
-## 1. java基础
+## 1. java基础
 
 1. .java 源文件只有一个public 类，且public文件名和类名必须一致
 2. goto 是java的保留关键字，但是没有被使用
@@ -555,7 +555,7 @@ JSP侧重于视图，Servlet主要用于控制逻辑。在struts框架中,JSP位
 
 - 定义：
 
-进程：具有一定独立功能的程序关于某个数据集合上的一次运行活动，进程是系统进行资源分配和调度的一个独立的单位
+进程：具有一定的独立功能的程序关于某个数据集合上的一次运行活动，进程是系统进行资源分配和调度的一个独立的单位
 
 线程：进程的一个实体，是CPU调度和分派的基本单位,它是比进程更小的能独立运行的基本单位.线程自己基本上不拥有系统资源,只拥有一点在运行中必不可少的资源(如程序计数器,一组寄存器和栈),但是它可与同属一个进程的其他的线程共享进程所拥有的全部资源。
 
@@ -637,6 +637,4 @@ JSP侧重于视图，Servlet主要用于控制逻辑。在struts框架中,JSP位
 （死锁原因及如何避免更深理解移步：http://blog.csdn.net/ls5718/article/details/51896159）
 
 ## java 算法
-
-
 

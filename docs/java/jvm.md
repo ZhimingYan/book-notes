@@ -407,17 +407,435 @@ G1 把新生代和老年代划分成多个大小相等的独立区域（Region�
 
 # 虚拟机性能监控工具
 
-jdk命令行：
+SUN JDK 监控和故障处理工具， 部分虚拟机可能需要开启JMX管理功能， 启动添加参数 "-Dcom.sun.management.jmxremote"
 
+名称 | 主要作用
+---|---
+jps | JVM Process Status Tool, 显示系统内所有的HotSpot虚拟机进程
+jstat | JVM Statistics Monitoring Tool, 用于收集HotSpot 虚拟机各方面的运行数据
+jinfo | 显示虚拟机配置信息
+jmap | Memory Map for Java, 生成虚拟机的内存转储快照（heapdump）文件
+jhat | JVM Heap Dump Browser, 用于分析heapdump 文件，它会建立一个HTTP/HTML服务器，在浏览器上面可以看到分析结果
+jstack | Stack Trace for Java, 显示虚拟机的线程快照
+
+## 可视化工具 
+- JConsole
+- VisualVM
 
 # 类文件结构
 
+[class 文件结构](https://www.cnblogs.com/wade-luffy/p/5929325.html)
+
 # 虚拟机类加载机制
+
+虚拟机把描述类的数据从Class文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这就是虚拟机的类加载机制。
+
+[类加载机制](https://github.com/CyC2018/Interview-Notebook/blob/master/notes/Java%20%E8%99%9A%E6%8B%9F%E6%9C%BA.md#%E4%B8%89%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6)
 
 # 虚拟机字节码执行引擎
 
-# 程序编译与代码优化
+执行引擎是Java逊尼基最核心的组成部分之一，在java虚拟机规范中定义了虚拟机字节码执行引擎的概念模型。
+
+## 运行时栈帧
+
+栈帧(Stack Frame)是用于支持虚拟机进行方法调用和方法执行的数据结构，是虚拟机运行时数据区中的虚拟机栈的栈元素。栈帧存储了方法的`局部变量表`、`操作数栈`、`动态连接`、`方法返回地址`等信息，**每个方法从调用开始到执行完成的过程，都是栈帧在虚拟机栈入栈到出栈的过程。**
+
+![运行时栈帧](img/990532-20161113064456420-1511672121.jpg)
+
+- 局部变量表：
+
+一组变量值存储空间，用于存放方法参数和方法内部定义的局部变量。在Java程序编译为Class文件时，就在方法的Code属性的max_locals数据项中确定了该方法所需要分配的局部变量表的最大容量。
+
+局部变量表以变量槽(slot)为最小单位，每个slot都能存放java的基本类型和引用类型，通常使用32位或者更小的物理内存来存放，如果使用64位的物理内存空间去实现slot，则虚拟机仍然需要利用对齐和补白的手段让slot在外观上看起来和32位一致。
+
+对于64位的数据（只有long 和 double），虚拟机会以**高位对齐**的方法来为其分配两个连续的slot空间，分为两次读写操作。由于局部变量表建立在线程的堆栈上，线程私有，不论读写两个连续的slot是否原子操作，都不会引起数据安全问题。
+
+虚拟机通过索引定位的方法使用局部变量表，索引值的范围是从0开始至局部变量表最大的Slot数量。如果访问的是32位数据类型的变量，索引n就代表了使用第n个Slot，如果是64位数据类型的变量，则说明会同时使用n和n+1两个Slot。对于两个相邻的共同存放一个64位数据的两个Slot，不允许采用任何方式单独访问其中的某一个，Java虚拟机规范中明确要求了如果遇到进行这种操作的字节码序列，虚拟机应该在类加载的校验阶段抛出异常。
+
+在方法执行的时候，虚拟机使用局部变量表完成参数值到参数变量列表的传递过程，对于实力方法，局部变量表第0位索引的slot默认是用于传递所属对象实例的引用（this）, 其余参数按照参数列表顺序排列（从1开始），参数列表分配完毕后，根据方法体内部定义的变量顺序和作用域分配其他的slot。
+
+- 操作数栈：
+
+![运行时栈帧结构](https://www.cnblogs.com/wade-luffy/p/6058067.html)
+
+## 方法调用
+
+方法调用不同于方法执行，方法调用阶段的任务是确定被调用方法的版本。Class文件的编译不包含传统编译中的链接步骤一切方法调用在Class文件里面存储的都只是符号引用，不是方法实际的运行内存中的入口地址，增加了Java的动态扩展能力。
+
+对于静态方法和私有方法，在类加载的时候就已经确定了，对于公有、保护的实例方法，在运行期间才能确定方法的调用
+
+### 解析
+
+class文件中，所有的目标方法的都是一个常量池的符号引用，在类加载的解析阶段，会将其中的一部分符号引用转化成直接引用。
+
+java中符合“**编译期可知，运行期不可变**”的要求的方法，包括静态方法和私有方法两大类，两个方法都不能通过继承或者别的方式重写其他版本，因此它们适合在类加载阶段进行解析。
+
+java虚拟机提供了5条方法调用字节码指令：
+
+- invokestatic：调用静态方法
+- invokespecial: 调用实例构造器<init>方法、私有方法和父类方法
+- invokevirtual: 调用所有虚方法
+- invokeinterface: 调用接口方法，会在运行时确定一个实现此接口的对象
+- invokedynamic: 先在运行时动态解析出调用点限定符所引用的方法，然后在执行该方法，在此之前4条调用指令，分派逻辑是固化在Java虚拟机内部的，而invokedynamic指令的分派逻辑是由用户所设定的引导方法决定的。
+
+invokestatic 和 invokespecial指令调用的方法，直接在解析阶段就可以确定唯一的调用版本，符合条件的有静态方法、私有方法、实例构造器、父类方法4类，他们在类加载的时候就会把符号引用解析为该方法的直接引用，这些方法称为`非虚方法`,其他方法（出final方法）称为`虚方法`。
+
+final 方法是使用invokespecial指令调用的，因为它无法被覆盖，所有没有其他版本，不需要进行多态选择，java语言规范说明了final是一种非虚方法。
+
+解析调用是一个静态的过程，在编译期间就可以完全确定，在类装载的解析接单就会把设计的符号引用全部变为可确定的直接引用，不会延迟到运行期完成。
+
+## 分派
+
+`解析`是一个静态的过程，在编译期间就已经完成，而`分派`有可能是静态的，也有可能是动态的。分派是**多态性**的体现，java虚拟机底层提供了我们开发过程中“重载”和“重写”的底层实现，其中重载（overload）属于静态分派，而重写（override）属于动态分派的过程。
+
+### 静态分派
+
+静态分派典型应用是**方法重载（overload）**，静态分派发生在编译阶段，因此确定静态分派的动作实际上不是有虚拟机来执行的。静态分派的最直接的解释是在重载的时候通过参数的`静态类型`而不是`实际类型`来作为判断依据的。因此，在编译阶段，javac编译器就会根据参数的静态类型来决定使用函数的那个版本。
+
+``` java
+public class StaticDispatch {
+
+    public static void main(String[] args) {
+        Human man = new Man();
+        Human woman = new Woman();
+        StaticDispatch sr = new StaticDispatch();
+        sr.sayHello(man);
+        sr.sayHello(woman);
+    }
+
+    static abstract class Human { }
+
+    static class Man extends Human { }
+
+    static class Woman extends Human { }
+
+    public void sayHello(Human guy) {
+        System.out.println("hello, guy");
+    }
+
+    public void sayHello(Man guy) {
+        System.out.println("hello, man");
+    }
+
+    public void sayHello(Woman guy) {
+        System.out.println("hello, woman");
+    }
+}
+
+```
+
+输出结果：
+
+hello, guy
+hello, guy
+
+首先弄清楚什么是静态类型和实际类型，在语句Human man = new Man();中，Human称为变量的静态类型（Static Type）或者外观类型（Apparent Type），Man称为变量的实际类型（Actual Type）。静态类型和实际类型在程序中都可以发生变化，但是静态类型的变化仅仅发生在使用时，变量本身的静态类型不会改变，最终的静态类型在编译期是可知的；而实际类型变化的结果在运行期才可以确定，编译时并不知道一个对象的实际类型是什么。例如：
+
+``` java
+// 实际类型变化
+Human man = new Man();
+man = new Woman();
+// 静态类型变化
+sr.sayHello((Man) man);
+sr.sayHello((Woman) man);
+```
+
+在该实例代码中，main()方法的两次调用sayHello()，在方法接收者已经确定是对象sr的前提下，使用哪个重载版本就完全取决于传入参数的数量和数据类型。代码中使用了两个静态类型相同而实际类型不同的变量，但是Javac编译期在重载时是**通过参数的静态类型而不是实际类型**作为判定依据的，man和woman的静态类型都是Human。静态类型在编译期可知，因此在编译阶段，编译期根据man和woman的静态类型为Human的事实，选择sayHello(Human)作为调用目标，这就是**方法重载**的本质。
+
+所有依赖静态类型来定位方法执行版本的分派动作称为**静态分派**。静态分派是还没有涉及到虚拟机，由编译期执行。虽然编译器能够在编译阶段确定方法的版本，但是很多情况下重载的版本不是唯一的，在这种模糊的情况下，编译器会选择一个更合适的版本。
+
+### 动态分派
+
+动态分派一个最直接的例子就是**重写（Override）**。java如何在程序运行期间确定方法的执行版本的呢？
+
+java虚拟机使用invokevirtual指令实现运行时解析，过程如下：
+
+1. 找到操作数栈栈顶的第一个元素所指向的对象的实际类型，记为C
+
+2. 如果在类型C中找到与常量中描述符和简单名称都相符的方法，则进行访问权限的校验，如果通过则返回这个方法的直接引用，查找结束；如果不通过，则返回非法访问异常
+
+3. 如果在类型C中没有找到，则按照继承关系从下到上依次对C的各个父类进行第2步的搜索和验证过程
+
+4. 如果始终没有找到合适的方法，则抛出抽象方法错误的异常
+
+从这个过程可以发现，在第一步的时候就在运行期确定接收对象（执行方法的所有者称为接受者）的实际类型，所以当调用invokevirtual指令就会把运行时常量池中符号引用解析为不同的直接引用，这就是方法重写的本质。
+
+动态分派的实例代码如下：
+
+``` java
+public class DynamicDispatch {
+
+    public static void main(String[] args) {
+        Human man = new Man();
+        Human woman = new Woman();
+        man.sayHello();
+        woman.sayHello();
+        man = new Woman();
+        man.sayHello();
+    }
+
+    static abstract class Human { 
+        protected abstract void sayHello();
+    }
+
+    static class Man extends Human {
+        @Override
+        protected void sayHello() {
+            System.out.println("man say hello");
+        } 
+    }
+
+    static class Woman extends Human {
+        @Override
+        protected void sayHello() {
+            System.out.println("woman say hello");
+        } 
+    }
+}
+```
+
+输出：
+
+man say hello
+woman say hello
+woman say hello
+
+### 虚拟机动态分派的实现
+
+由于动态分派是非常频繁的操作，实际实现中不可能真正如此实现。Java虚拟机是通过“稳定优化”的手段——在方法区中建立一个虚方法表（Virtual Method Table），通过使用方法表的索引来代替元数据查找以提高性能。虚方法表中存放着各个方法的实际入口地址（由于Java虚拟机自己建立并维护的方法表，所以没有必要使用符号引用，那不是跟自己过不去嘛），如果子类没有覆盖父类的方法，那么子类的虚方法表里面的地址入口与父类是一致的；如果重写父类的方法，那么子类的方法表的地址将会替换为子类实现版本的地址。
+
+方法表是在类加载的连接阶段（验证、准备、解析）进行初始化，准备了子类的初始化值后，虚拟机会把该类的虚方法表也进行初始化。
 
 # java 内存模型
 
-# java 线程安全和锁
+## 处理器、高速缓存、主内存
+
+内存模型可以理解为在特定的操作协议下，对特定的内存或高速缓存进行读写访问的过程抽象。
+
+![处理器](img/处理器缓存内存.png)
+
+由于计算机的存储设备和计算能力相差太多，因此采用高速缓存作为处理器和内存之间的缓冲，每个处理器都有自己的高速缓存，但是又共享同一主内存，因此引入了缓存一致性的问题。通常采用MSI、MESI等协议实现缓存一致性。
+
+除了增加高速缓存，为了保证处理器的资源被充分利用，还有可能对输入代码进行乱序执行优化，处理器保证该结果和顺序执行结果是一致的， java虚拟机的即时编译器也有类似的指令重排序的优化。
+
+## java 内存模型
+
+java 虚拟机规范中试图定义一种Java内存模型来屏蔽掉各种硬件和操作系统的内存访问差异，实现让java 程序在各种平台下都能达到一致的内存访问效果。
+
+### 主内存和工作内存
+
+java内存模型的目标：  
+
+定义程序中各个变量（实例字段，静态字段和构成数组对象的元素，不包括线程私有的局部变量和方法参数，因为线程私有不会被共享，本身不存在竞争问题）的访问规则。
+
+java内存模型的规则：  
+
+所有的变量都存储在主内存中，每个线程还有自己的工作内存，工作内存存储在高速缓存或者寄存器中，保存了该线程使用的变量的主内存副本拷贝。
+
+线程只能直接操作工作内存中的变量，不同线程之间的变量值传递需要通过主内存来完成。
+
+![java线程。主内存和工作内存的关系](img/47358f87-bc4c-496f-9a90-8d696de94cee.png)
+
+### 内存间的交互操作
+
+Java 内存模型定义了8个操作来完成主内存和工作内存的交互操作。
+
+![内存间交互](img/536c6dfd-305a-4b95-b12c-28ca5e8aa043.png)
+
+- read：作用于主内存，把一个变量的值从主内存传输到工作内存中
+- load：作用于工作内存，在 read 之后执行，把 read 得到的值放入工作内存的变量副本中
+- use：作用于工作内存，把工作内存中一个变量的值传递给执行引擎
+- assign：作用于工作内存，把一个从执行引擎接收到的值赋给工作内存的变量
+- store：把工作内存的一个变量的值传送到主内存中
+- write：在 store 之后执行，把 store 得到的值放入主内存的变量中
+- lock：作用于主内存的变量，把一个变量标识为一条线程独占的状态
+- unlock：作用于主内存的变量，把一个处于锁定状态的变量释放出来，释放后的变量才能被其他线程锁定
+
+如果想把变量从主内存复制到工作内存，那就要顺序的执行read和load操作，如果是从工作内存同步到主内存，那就要顺序的执行store和write操作。并且这两对操作是**原子性**的。
+
+对于volatile类型的变量，java内存模型定义了如下规则：
+
+当一个变量定义为volatile之后，具备两种特性:
+
+第一是保证此变量对所有线程的**可见性**，即线程A修改了这个变量的值，线程B立即能够得到新的值。而普通变量则需要经过主内存的同步来完成多线程之间的可见性。
+
+注意volatile只能保证变量的可见性，不能保证变量操作的原子性。在不符合以下两种场景中，我们需要通过枷锁来保证原子性（synchronized或java.util.concurrent类）
+
+> 1. 运算结果并不依赖变量的当前值，或者能够确保只有单一的线程修改变量的值
+> 2. 变量不需要与其他的状态变量共同参与不变约束。
+
+第二个语义是禁止指令重排序优化，普通的变量仅仅会保证该方法的执行过程中所有依赖复制结果的地方都能获取到正确的结果，而不能保证变量赋值操作的顺序与程序代码中的执行顺序一致。
+
+### 内存模型的三大特性
+
+1. 原子性
+
+Java 内存模型保证了 read、load、use、assign、store、write、lock 和 unlock 操作具有原子性，例如对一个 int 类型的变量执行 assign 赋值操作，这个操作就是原子性的。但是 Java 内存模型允许虚拟机将没有被 volatile 修饰的 64 位数据（long，double）的读写操作划分为两次 32 位的操作来进行，即 load、store、read 和 write 操作可以不具备原子性。
+
+AtomicInteger这种原子类可以实现原子性
+
+``` java
+public class AtomicExample {
+    private AtomicInteger cnt = new AtomicInteger();
+
+    public void add() {
+        cnt.incrementAndGet();
+    }
+
+    public int get() {
+        return cnt.get();
+    }
+}
+```
+
+除了使用原子类之外，也可以使用 synchronized 互斥锁来保证操作的完整性，它对应的内存间交互操作为：lock 和 unlock，在虚拟机实现上对应的字节码指令为 monitorenter 和 monitorexit。
+
+2. 可见性
+
+可见性指当一个线程修改了共享变量的值，其它线程能够立即得知这个修改。Java 内存模型是通过在变量修改后将新值同步回主内存，在变量读取前从主内存刷新变量值来实现可见性的。
+
+volatile 可保证可见性。synchronized 也能够保证可见性，对一个变量执行 unlock 操作之前，必须把变量值同步回主内存。final 关键字也能保证可见性：被 final 关键字修饰的字段在构造器中一旦初始化完成，并且没有发生 this 逃逸（其它线程可以通过 this 引用访问到初始化了一半的对象），那么其它线程就能看见 final 字段的值。
+
+对前面的线程不安全示例中的 cnt 变量用 volatile 修饰，不能解决线程不安全问题，因为 volatile 并不能保证操作的原子性。
+
+[java volatile 和 synchronized 作用和区别](http://xraorao.top/2016/10/24/%E8%BD%AC-Java%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%EF%BC%8Csynchronized%E9%94%81%E4%BD%8F%E7%9A%84%E6%98%AF%E4%BB%A3%E7%A0%81%E8%BF%98%E6%98%AF%E5%AF%B9%E8%B1%A1/)
+
+3. 有序性
+
+有序性是指：在本线程内观察，所有操作都是有序的。在一个线程观察另一个线程，所有操作都是无序的，无序是因为发生了指令重排序。
+
+在 Java 内存模型中，允许编译器和处理器对指令进行重排序，重排序过程不会影响到单线程程序的执行，却会影响到多线程并发执行的正确性。
+
+volatile 关键字通过添加内存屏障的方式来禁止指令重排，即重排序时不能把后面的指令放到内存屏障之前。
+
+也可以通过 synchronized 来保证有序性，它保证每个时刻只有一个线程执行同步代码，相当于是让线程顺序执行同步代码。
+
+### 先行发生原则
+
+上面提到了可以用 volatile 和 synchronized 来保证有序性。除此之外，JVM 还规定了先行发生原则，让一个操作无需控制就能先于另一个操作完成。
+
+主要有以下这些原则：
+
+1. 程序次序规则：
+
+在一个线程内，在程序前面的操作先行发生于后面的操作。准确的说应该是代码的控制流顺序而不是程序代码顺序
+
+![](https://github.com/CyC2018/Interview-Notebook/blob/master/pics/single-thread-rule.png)
+
+2. 管程锁定规则：
+
+一个 unlock 操作先行发生于后面对同一个锁的 lock 操作。
+
+![](https://github.com/CyC2018/Interview-Notebook/blob/master/pics/monitor-lock-rule.png)
+
+3. volatile变量规则：
+
+对一个 volatile 变量的写操作先行发生于后面对这个变量的读操作
+
+![](https://github.com/CyC2018/Interview-Notebook/blob/master/pics/volatile-variable-rule.png)
+
+4. 线程启动规则：
+
+Thread 对象的 start() 方法调用先行发生于此线程的每一个动作
+
+![](https://github.com/CyC2018/Interview-Notebook/blob/master/pics/thread-start-rule.png)
+
+5. 线程加入规则:
+
+join() 方法返回先行发生于 Thread 对象的结束。
+
+![](https://github.com/CyC2018/Interview-Notebook/blob/master/pics/thread-join-rule.png)
+
+6. 线程终端规则：
+
+对线程 interrupt() 方法的调用先行发生于被中断线程的代码检测到中断事件的发生，可以通过 Thread.interrupted() 方法检测到是否有中断发生。
+
+7. 对象终结规则:
+
+一个对象的初始化完成（构造函数执行结束）先行发生于它的 finalize() 方法的开始。
+
+8. 传递性：
+
+如果操作 A 先行发生于操作 B，操作 B 先行发生于操作 C，那么操作 A 先行发生于操作 C。
+
+## java 与线程
+
+### 线程的实现
+
+实现线程主要有3种方式：
+
+- 1. 内核线程实现；使用内核线程的一种高级接口--轻量级进程（light weight process),轻量级进程和内核线程1:1的关系称为一对一模型
+
+- 2. 用户线程实现；广义上讲，一个线程只要不是内核线程，就是用户线程。进程和用户线程之间是1：N的关系
+
+- 3. 和使用用户线程加轻量级进程混合实现。N:M的关系
+
+Sun JDK中，windows 和 linux版本都是使用一对一的线程实现模型。
+
+### java线程调度
+
+线程的主要调度方式有两种：`协同式调度`和`抢占式调度`
+
+协同式调度的多线程系统，实现简单，线程把自己的工作执行完成之后，主动通知系统切换到另外一个线程，但是容易导致阻塞。
+
+抢占式调度的多线程系统，每个线程有系统来分配执行时间，线程的切换不由线程本身决定，在该种实现线程调度的方式下，线程的执行时间是系统可控的，不会导致阻塞。
+
+### 状态转换
+
+![线程状态转换](img/ace830df-9919-48ca-91b5-60b193f593d2.png)
+
+java定义了5中线程状态，在任意一个时间点，一个线程只能有且只有其中的一种状态。
+
+1. 新建(New)：
+
+创建后尚未启动
+
+2. 可运行(Runable)
+
+可能正在运行，也可能正在等待 CPU 时间片。
+
+包含了操作系统线程状态中的 Running 和 Ready。
+
+3. 阻塞(Blocking)
+
+等待获取一个排它锁，如果其线程释放了锁就会结束此状态。
+
+4. 无限期等待（Waiting）
+
+等待其它线程显式地唤醒，否则不会被分配 CPU 时间片。
+
+| 进入方法 | 退出方法 |
+| --- | --- |
+| 没有设置 Timeout 参数的 Object.wait() 方法 | Object.notify() / Object.notifyAll() |
+| 没有设置 Timeout 参数的 Thread.join() 方法 | 被调用的线程执行完毕 |
+| LockSupport.park() 方法 | - |
+
+5. 限期等待（Timed Waiting）
+
+无需等待其它线程显式地唤醒，在一定时间之后会被系统自动唤醒。
+
+调用 Thread.sleep() 方法使线程进入限期等待状态时，常常用“使一个线程睡眠”进行描述。
+
+调用 Object.wait() 方法使线程进入限期等待或者无限期等待时，常常用“挂起一个线程”进行描述。
+
+睡眠和挂起是用来描述行为，而阻塞和等待用来描述状态。
+
+阻塞和等待的区别在于，阻塞是被动的，它是在等待获取一个排它锁。而等待是主动的，通过调用 Thread.sleep() 和 Object.wait() 等方法进入。
+
+| 进入方法 | 退出方法 |
+| --- | --- |
+| Thread.sleep() 方法 | 时间结束 |
+| 设置了 Timeout 参数的 Object.wait() 方法 | 时间结束 / Object.notify() / Object.notifyAll()  |
+| 设置了 Timeout 参数的 Thread.join() 方法 | 时间结束 / 被调用的线程执行完毕 |
+| LockSupport.parkNanos() 方法 | - |
+| LockSupport.parkUntil() 方法 | - |
+
+6. 死亡（Terminated）
+
+可以是线程结束任务之后自己结束，或者产生了异常而结束。
+
+
+# java 线程安全和锁优化
+
+- [线程安全](https://github.com/xiongraorao/Interview-Notebook/blob/master/notes/Java%20%E5%B9%B6%E5%8F%91.md#%E5%8D%81%E4%B8%80%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8)
+- [锁优化](https://github.com/xiongraorao/Interview-Notebook/blob/master/notes/Java%20%E5%B9%B6%E5%8F%91.md#%E5%8D%81%E4%BA%8C%E9%94%81%E4%BC%98%E5%8C%96)
