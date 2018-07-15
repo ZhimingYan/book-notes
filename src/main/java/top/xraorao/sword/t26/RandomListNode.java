@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2018.  Xiong Raorao. All rights reserved.
+ * Project Name: book-notes
+ * File Name: RandomListNode.java
+ * Date: 18-6-27 上午8:29
+ * Author: Xiong Raorao
+ */
+
 package top.xraorao.sword.t26;
 
 /**
@@ -8,4 +16,11 @@ package top.xraorao.sword.t26;
  */
 public class RandomListNode {
 
+  int label;
+  RandomListNode next = null;
+  RandomListNode random = null;
+
+  RandomListNode(int label) {
+    this.label = label;
+  }
 }
