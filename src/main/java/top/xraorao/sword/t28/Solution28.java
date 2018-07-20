@@ -39,7 +39,7 @@ public class Solution28 {
     ArrayList<String> res = new ArrayList<>();
     if (str != null && str.length() > 0) {
       PermutationHelper(str.toCharArray(), 0, res);
-      //Collections.sort(res);
+      Collections.sort(res);
     }
     return res;
   }
