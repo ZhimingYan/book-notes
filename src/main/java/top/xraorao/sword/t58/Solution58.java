@@ -18,4 +18,42 @@ package top.xraorao.sword.t58;
  */
 public class Solution58 {
 
+  public static void main(String[] args) {
+
+  }
+
+  public TreeLinkNode GetNext(TreeLinkNode pNode) {
+    if (pNode == null) {
+      return null;
+    }
+    TreeLinkNode pNext = null;
+    if (pNode.right != null) {
+      TreeLinkNode right = pNode.right;
+      while (right.left != null) {
+        right = right.left;
+      }
+      pNext = right;
+    } else if (pNode.next != null) {
+      TreeLinkNode pCurrent = pNode;
+      TreeLinkNode pParent = pNode.next;
+      while (pParent != null && pCurrent == pParent.right) {
+        pCurrent = pParent;
+        pParent = pParent.next;
+      }
+      pNext = pParent;
+    }
+    return pNext;
+  }
+
+  static class TreeLinkNode {
+
+    int val;
+    TreeLinkNode left = null;
+    TreeLinkNode right = null;
+    TreeLinkNode next = null;
+
+    TreeLinkNode(int val) {
+      this.val = val;
+    }
+  }
 }

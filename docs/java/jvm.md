@@ -53,9 +53,9 @@ java堆也称为"GC"堆，现在的垃圾收集器大多采用分代收集算法
 
 该算法的思想是针对不同的对象采用不同的垃圾回收算法，java堆分为3块：
 
-- 新生代（Young Generation）
-- 老生代（Old Generation）
-- 永久代（Permanent Generation）
+    - 新生代（Young Generation）
+    - 老生代（Old Generation）
+    - 永久代（Permanent Generation）
 
 当一个对象被创建时，它首先进入新生代，之后有可能被转移到老年代中。新生代存放着大量的生命很短的对象，因此新生代在三个区域中垃圾回收的频率最高。
 
@@ -68,7 +68,7 @@ java堆也称为"GC"堆，现在的垃圾收集器大多采用分代收集算法
 
     除了在编译期生成的常量，还允许动态生成，例如 String 类的 intern()。这部分常量也会被放入运行时常量池。
 
-直接内存(Direct Memory)：
+- 直接内存(Direct Memory)：
 
 在 JDK 1.4 中新加入了 NIO 类，引入了一种基于通道 (channel) 和缓冲区 (Buffer) 的 I/O 方式它可以使用 Native 函数库直接分配堆外内存，然后通过一个存储在 Java 堆里的 DirectByteBuffer 对象作为这块内存的引用进行操作。这样能在一些场景中显著提高性能，因为避免了在 Java 堆和 Native 堆中来回复制数据。
 
@@ -456,7 +456,7 @@ jstack | Stack Trace for Java, 显示虚拟机的线程快照
 
 - 操作数栈：
 
-![运行时栈帧结构](https://www.cnblogs.com/wade-luffy/p/6058067.html)
+[运行时栈帧结构](https://www.cnblogs.com/wade-luffy/p/6058067.html)
 
 ## 方法调用
 
