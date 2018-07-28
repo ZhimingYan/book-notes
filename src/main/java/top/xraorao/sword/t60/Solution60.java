@@ -10,7 +10,6 @@ package top.xraorao.sword.t60;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
@@ -27,29 +26,47 @@ public class Solution60 {
 
   }
 
+  /**
+   * 解法一：利用队列的思想来打印。
+   * @param pRoot
+   * @return
+   */
   ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
     ArrayList<ArrayList<Integer>> lists = new ArrayList<>();
     if (pRoot == null) {
       return lists;
     }
-
-    LinkedList<TreeNode> nodes = new LinkedBlockingQueue<>();
-    nodes.push(pRoot);
-    int nexLevel = 0;
-    int toBePrinted = 1;
-    while (nodes.push(); != null) {
-      ArrayList<Integer> tempList = new ArrayList<>();
-      tempList.add(node.val);
-      if (node.left != null) {
-        tempList.add(node.left.val);
-        nexLevel++;
-      } else if (node.right != null) {
-        tempList.add(node.right.val);
-        nexLevel++;
+    LinkedList<TreeNode> layer = new LinkedList<>();
+    ArrayList<Integer> layerList = new ArrayList<>();
+    layer.add(pRoot);
+    int start = 0, end = 1;
+    while (!layer.isEmpty()) {
+      TreeNode cur = layer.remove();
+      layerList.add(cur.val);
+      start++;
+      if (cur.left != null) {
+        layer.add(cur.left);
       }
-
-      lists.add(tempList);
+      if (cur.right != null) {
+        layer.add(cur.right);
+      }
+      if (start == end) {
+        end = layer.size();
+        start = 0;
+        lists.add(layerList);
+        layerList = new ArrayList<>();
+      }
     }
+    return lists;
+  }
+
+  /**
+   * 解法二：
+   * @param pRoot
+   * @return
+   */
+  ArrayList<ArrayList<Integer>> Print2(TreeNode pRoot) {
+
   }
 
   class TreeNode {
