@@ -28,8 +28,6 @@ public class Solution60 {
 
   /**
    * 解法一：利用队列的思想来打印。
-   * @param pRoot
-   * @return
    */
   ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
     ArrayList<ArrayList<Integer>> lists = new ArrayList<>();
@@ -61,12 +59,24 @@ public class Solution60 {
   }
 
   /**
-   * 解法二：
-   * @param pRoot
-   * @return
+   * 解法二：使用递归方法来实现
    */
   ArrayList<ArrayList<Integer>> Print2(TreeNode pRoot) {
+    ArrayList<ArrayList<Integer>> list = new ArrayList<>();
+    depth(pRoot, 1, list);
+    return list;
+  }
 
+  private void depth(TreeNode root, int depth, ArrayList<ArrayList<Integer>> list) {
+    if (root == null) {
+      return;
+    }
+    if (depth > list.size()) {
+      list.add(new ArrayList<>());
+    }
+    list.get(depth - 1).add(root.val);
+    depth(root.left, depth + 1, list);
+    depth(root.right, depth + 1, list);
   }
 
   class TreeNode {
